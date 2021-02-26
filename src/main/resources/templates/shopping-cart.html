@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+</head>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" style="font-size: 40px;" href="/home">Авто Салон</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+                aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarsExampleDefault">
+            <ul class="navbar-nav m-auto">
+                <li class="nav-item m-auto">
+                    <a style="font-size: 30px;"class="nav-link active" href="/home">Почетна</a>
+                </li>
+                <li class="nav-item m-auto">
+                    <a style="font-size: 30px;" class="nav-link active" href="/cars/list">Автомобили</a>
+                </li>
+            </ul>
+
+            <form class="form-inline my-2 my-lg-0">
+                <a class="btn btn-light btn-sm ml-3" href="/logout">
+                    <i class="fa fa-shopping-cart"></i> Одјави се
+                </a>
+            </form>
+        </div>
+    </div>
+</nav>
+<section class="jumbotron text-center">
+    <div class="container">
+        <h3 class="jumbotron-heading">Кошничка на
+            Корисник: <th:block th:if="${#request.getRemoteUser()!=null}"
+                                th:text="${#request.getRemoteUser()}"></th:block>
+        </h3>
+    </div>
+</section>
+
+<div th:if="${hasError}">
+    <h5 class="text-center text-danger" th:text="${error}"></h5>
+</div>
+
+<div class="container mb-4">
+    <div class="row">
+        <div class="col-12" th:if="${products.size() > 0}">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Автомобил</th>
+                        <th scope="col">Цена</th>
+                        <th scope="col">Којнски сили</th>
+                        <th scope="col">Слика</th>
+                        <th scope="col">Опрема</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="product : ${products}">
+                        <td th:text="${product.getName()}"></td>
+                        <td th:text="${product.calcPrice()}"></td>
+                        <td th:text="${product.getHorsepower()}"></td>
+                        <td><img th:src="${product.getImage()}" width="180px" height="120px"/></td>
+                        <td>
+                            <form method="GET" th:action="@{'shopping-cart/add/gear/{id}' (id=${product.getId()})}">
+                                <input type="submit" class="btn btn-info" value="Додај опрема">
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+
+</body>
+</html>

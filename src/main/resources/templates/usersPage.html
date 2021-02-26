@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <style type="text/css">
+        html, body {
+            margin-left: 15px;
+            margin-right: 15px;
+            padding: 0px;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-bottom: 1px solid gray;
+            font-family: Tahoma, Verdana, Segoe, sans-serif;
+            width: 100%;
+        }
+
+        th {
+            border-bottom: 1px solid gray;
+            background: none repeat scroll 0 0 #343a40;
+            padding: 10px;
+            color: #FFFFFF;
+        }
+
+        tr {
+            border-top: 1px solid gray;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background: #FFFFFF
+        }
+
+        tr:nth-child(odd) {
+            background: #BBBBBB
+        }
+
+        #wrapper {
+            width: 100%;
+            margin-top: 0px;
+        }
+
+        #header {
+            width: 100%;
+            background: #09c332;
+            margin-top: 0px;
+            padding: 15px 0px 15px 15px;
+        }
+
+        #header h2 {
+            width: 100%;
+            margin: auto;
+            color: #FFFFFF;
+        }
+
+        #container {
+            width: 100%;
+            margin: auto
+        }
+
+        #container h3 {
+            color: #000;
+        }
+
+        #container #content {
+            margin-top: 20px;
+        }
+
+        .add-button {
+            border: 1px solid #666;
+            border-radius: 5px;
+            padding: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            width: 120px;
+            padding: 5px 10px;
+
+            margin-bottom: 15px;
+            background: #cccccc;
+        }
+
+    </style>
+    <title>Lista na klienti</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+
+    <!-- reference our style sheet -->
+
+
+</head>
+
+<body>
+<div th:if="${hasError}">
+    <h5 class="text-center text-danger" th:text="${error}"></h5>
+</div>
+
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container">
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarsExampleDefault">
+            <ul class="navbar-nav m-auto">
+                <span style="font-size: 40px" class="navbar-brand"><a style="font-size: 40px" class="btn btn-dark" href="/home">Автосалон</a></span>
+            </ul>
+
+
+            <ul class="nav navbar-nav navbar-right">
+
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" href="#">
+                        <th:block th:if="${#request.getRemoteUser() != null}"
+                                  th:text="${#request.getRemoteUser()}"></th:block>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="btn btn-success btn-sm ml-3" href="/shopping-cart">
+                        <i class="fa fa-shopping-cart"></i> Кошничка
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="btn btn-light btn-sm ml-3" href="/logout">
+                        <i class="fa fa-shopping-cart"></i> Одјави се
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="btn btn-light btn-sm ml-3" href="/login">
+                        <i class="fa fa-shopping-cart"></i> Најави се
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<br>
+<div>
+    <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+    <a href="/users/adduser" class="btn btn-dark">Додај нов клиент</a>
+    </th:block>
+</div>
+<div id="container">
+
+    <div id="content">
+
+        <!-- put new button: Add Customer -->
+
+
+        <!--  add our html table here -->
+
+
+        <table>
+            <tr>
+                <th>Име</th>
+                <th>Презиме</th>
+                <th>Email</th>
+                <th>Операции</th>
+
+            </tr>
+
+
+            <tr th:each="user : ${usersList}">
+                <td th:text="${user.getName()}"></td>
+                <td th:text="${user.getSurname()}"></td>
+                <td th:text="${user.getEmail()}"></td>
+                <td>
+                    <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                        <form th:action="@{'/users/delete/{id}' (id=${user.getId()})}" th:method="DELETE">
+                            <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash">Избриши</i></button>
+                        </form>
+                    </th:block>
+                    <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a th:href="@{'/users/edit-form/{id}' (id=${user.getId()})}"
+                           class="btn btn-sm btn-info"><i class="fa fa-trash">Измени</i></a>
+                    </th:block>
+
+
+                </td>
+
+            </tr>
+        </table>
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
